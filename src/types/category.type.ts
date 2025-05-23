@@ -1,4 +1,4 @@
-export type Category = {
+export type CategoryInput = {
   id?: string;
   name: string;
 };

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Road } from "../dtos/roadType.type";
 import roadService from "../services/roadType.service";
 import { STATUS_CODE } from "../utils/error_code";
+import { RoadInput } from "../types/roadType.type";
 
 /**
  * Creates a new road
@@ -10,7 +10,7 @@ import { STATUS_CODE } from "../utils/error_code";
  * @returns Created road object or error message
  */
 const create = async (req: Request, res: Response) => {
-  const { name, roadType }: Road = req.body;
+  const { name, roadType }: RoadInput = req.body;
   try {
     const road = await roadService.create({ name, roadType });
     return res.status(STATUS_CODE.SUCCESS).json(road);
@@ -80,7 +80,7 @@ const deleteOne = async (req: Request, res: Response) => {
  * @returns Updated road object or error message
  */
 const updateOne = async (req: Request, res: Response) => {
-  const { name, roadType }: Road = req.body;
+  const { name, roadType }: RoadInput = req.body;
   try {
     const road = await roadService.updateOne(req.params.id, {
       name,

@@ -65,12 +65,6 @@ Content-Type: application/json
 GET http://localhost:3010/users/reports
 Content-Type: application/json
 
-
-
-### Update a user token by ID
-PUT  http://localhost:3010/users/01946483-6860-77fd-b53c-6894533b709b/push-token
+### Start OAuth flow
+GET http://localhost:3010/auth/google
 Content-Type: application/json
-
-{
-    "token": "token-blabla"
-}

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { STATUS_CODE } from "../utils/error_code";
-import { Incident } from "../dtos/incident.dto";
 import reportService from "../services/report.service";
 import incidentService from "../services/incident.service";
+import { IncidentInput } from "../types/incident.type";
 
 const create = async (req: Request, res: Response) => {
   const {
@@ -11,7 +11,7 @@ const create = async (req: Request, res: Response) => {
     reportId,
     responderType,
     severity,
-  }: Incident = req.body;
+  }: IncidentInput = req.body;
   try {
     const report = await reportService.getOne(reportId);
     if (!report) {
@@ -66,7 +66,7 @@ const updateOne = async (req: Request, res: Response) => {
     reportId,
     responderType,
     severity,
-  }: Incident = req.body;
+  }: IncidentInput = req.body;
   try {
     const incident = await incidentService.updateOne(req.params.id, {
       description,

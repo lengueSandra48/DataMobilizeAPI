@@ -1,6 +1,10 @@
 {
     "translation": {
         "verifySubject": "Vérifier votre compte",
-        "verifyEmail": "Cher {{username}}, \nVoici votre code de vérification {{code}}. Nous vous souhaitons la bienvenue dans la grande famille de data mobilize. \nCordialement"
+        "verifyEmail": "Cher {{username}}, \nVoici votre code de vérification {{code}}. Nous vous souhaitons la bienvenue dans la grande famille de data mobilize. \nCordialement",
+        "passwordResetCodeEmail": "Votre code de réinitialisation de votre mot de passe est {{code}}. Si vous n'avez pas fait cette requete, ignorez ce mail. \nCordialement",
+        "resetPasswordSuccess": "Votre mot de passe a été réinitialisé avec succès",
+        "userNotFound": "Utilisateur introuvable",
+        "incorrectVerificationCode": "Code de vérification incorrect"
     }
 }

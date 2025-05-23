@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { users } from "../db/schema/user.schema";
 import { db } from "../utils/db";
-import { CreateUserInput, User } from "../dtos/user.dto";
+import { CreateUserInput, User } from "../types/user.dto";
 import { verifications } from "../db/schema/verification.schema";
 import { reports } from "../db/schema/report.schema";
 import { transformData } from "../utils/helper";
@@ -25,11 +25,7 @@ const getUsersWithReports = async () => {
       email: users.email,
       username: users.username,
       reportId: reports.id,
-      reportDescription: reports.description,
-      reportLocalisation: reports.localisation,
-      reportRoadType: reports.roadType,
-      reportCategory: reports.category,
-      reportPhotos: reports.photos,
+      reportData: reports.data,
     })
     .from(users)
     .leftJoin(reports, eq(reports.userId, users.id));
@@ -49,11 +45,7 @@ const getUsersWithReports = async () => {
     if (row.reportId) {
       usersMap.get(row.userId).reports.push({
         id: row.reportId,
-        description: row.reportDescription,
-        localisation: row.reportLocalisation,
-        roadType: row.reportRoadType,
-        category: row.reportCategory,
-        photos: row.reportPhotos,
+        data: row.reportData,
       });
     }
   });

@@ -1,4 +1,4 @@
-export type Incident = {
+export type IncidentInput = {
   id?: string;
   incidentType: string;
   severity: string;

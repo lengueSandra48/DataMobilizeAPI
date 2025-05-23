@@ -71,3 +71,5 @@ yarn.lock
 build
 .scannerwork
 drizzle/
+
+.DS_Store

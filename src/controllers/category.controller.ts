@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { STATUS_CODE } from "../utils/error_code";
-import { Category } from "../dtos/category.dto";
 import categoryService from "../services/category.service";
+import { CategoryInput } from "../types/category.type";
 
 /**
  * Creates a new category
@@ -10,7 +10,7 @@ import categoryService from "../services/category.service";
  * @returns Created category object or error message
  */
 const create = async (req: Request, res: Response) => {
-  const { name }: Category = req.body;
+  const { name }: CategoryInput = req.body;
   try {
     const category = await categoryService.create({ name });
     return res.status(STATUS_CODE.SUCCESS).json(category);

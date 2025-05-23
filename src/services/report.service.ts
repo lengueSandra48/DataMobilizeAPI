@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { reports } from "../db/schema/report.schema";
-import { Report } from "../dtos/report.dto";
 import { db } from "../utils/db";
 import { incidents } from "../db/schema/incident.schema";
 
@@ -63,11 +62,6 @@ const getReportsWithIncidents = async () => {
   const res = await db
     .select({
       reportId: reports.id,
-      description: reports.description,
-      localisation: reports.localisation,
-      roadType: reports.roadType,
-      category: reports.category,
-      photos: reports.photos,
       userId: reports.userId,
       incidentId: incidents.id,
       incidentDescription: incidents.description,
@@ -81,11 +75,6 @@ const getReportsWithIncidents = async () => {
     if (!reportsMap.has(row.reportId)) {
       reportsMap.set(row.reportId, {
         id: row.reportId,
-        description: row.description,
-        localisation: row.localisation,
-        roadType: row.roadType,
-        category: row.category,
-        photos: row.photos,
         userId: row.userId,
         incidents: [],
       });

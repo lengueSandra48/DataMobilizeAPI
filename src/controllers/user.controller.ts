@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import * as bcrypt from "bcryptjs";
-import { CreateUserInput, User } from "../dtos/user.dto";
+import { CreateUserInput, User } from "../types/user.dto";
 import userService from "../services/user.service";
 import verificationService from "../services/verification.service";
 import { STATUS_CODE } from "../utils/error_code";
-import i18next, { t } from "i18next";
 import { KODY_NOREPLY_EMAIL } from "../startup/config";
-import { Verification } from "../dtos/verification.dto";
 import { sendEmail } from "../clients/email.client";
+import passport from "passport";
+import { VerificationInput } from "../types/verification.dto";
 
 const register = async (req: Request, res: Response) => {
   const { email, localisation, username }: CreateUserInput = req.body;
@@ -44,7 +44,7 @@ const register = async (req: Request, res: Response) => {
     }
 
     console.log("creating verification code: " + code);
-    const verification: Verification = await verificationService.create({
+    const verification: VerificationInput = await verificationService.create({
       userId: user.id,
       code,
     });
@@ -67,6 +67,7 @@ const register = async (req: Request, res: Response) => {
       email: user.email,
       isVerified: user.isVerified,
       localisation: user.localisation,
+      expoPushToken: null,
     });
   } catch (error) {
     console.log("Failed to register user with error: " + error);
@@ -97,6 +98,7 @@ const login = async (req: Request, res: Response) => {
       email: user.email,
       isVerified: user.isVerified,
       localisation: user.localisation,
+      expoPushToken: user.expoPushToken,
     });
   } catch (error) {
     return res
@@ -107,7 +109,7 @@ const login = async (req: Request, res: Response) => {
 
 const verify = async (req: Request, res: Response) => {
   try {
-    const { code }: { code: number } = req.body;
+    const { code }: { code: string } = req.body;
 
     const verification = await verificationService.getOne(req.params.userId);
 
@@ -117,7 +119,7 @@ const verify = async (req: Request, res: Response) => {
         .json({ message: "Verification code not found" });
     }
 
-    if (parseInt(verification.code.toString(), 10) !== code) {
+    if (verification.code.toString() !== code) {
       return res
         .status(STATUS_CODE.USER_INCORRECT_CODE)
         .json({ message: "Verification code incorrect" });
@@ -138,6 +140,7 @@ const verify = async (req: Request, res: Response) => {
       email: updatedUser.email,
       isVerified: updatedUser.isVerified,
       localisation: updatedUser.localisation,
+      expoPushToken: updatedUser.expoPushToken,
     });
   } catch (error) {
     return res
@@ -193,13 +196,22 @@ const removeOne = async (req: Request, res: Response) => {
 const updateOne = async (req: Request, res: Response) => {
   try {
     const user: User = req.body;
+    const storedUser: User = await userService.getOne(req.params.id);
+
+    if (!storedUser) {
+      return res
+        .status(STATUS_CODE.NOT_FOUND)
+        .json({ message: "User not found" });
+    }
+
     const updatedUser = await userService.updateOne(user);
-    return res.json({
+    return res.status(STATUS_CODE.SUCCESS).json({
       id: updatedUser.id,
       username: updatedUser.username,
       email: updatedUser.email,
       isVerified: updatedUser.isVerified,
       localisation: updatedUser.localisation,
+      expoPushToken: updatedUser.expoPushToken,
     });
   } catch (error) {
     return res
@@ -208,34 +220,138 @@ const updateOne = async (req: Request, res: Response) => {
   }
 };
 
-const expoPushToken = async (req: Request, res: Response) => {
+const requestResetPassword = async (req: Request, res: Response) => {
   try {
-    const { token }: { token: string } = req.body;
-    const user: User = await userService.getOne(req.params.id);
+    const { email } = req.body;
 
+    const user = await userService.getByEmail(email);
     if (!user) {
       return res
-        .status(STATUS_CODE.NOT_FOUND)
+        .status(STATUS_CODE.USER_NOT_FOUND)
+        .json({ message: "User not found" });
+    }
+    req.i18n.changeLanguage(user.localisation);
+
+    let code = Math.floor(Math.random() * 10000);
+
+    // we make sure the code is 4 digits
+    while (code < 1000) {
+      code = Math.floor(Math.random() * 10000);
+    }
+
+    await verificationService.create({ userId: user.id, code });
+
+    await sendEmail({
+      to: [{ email: user.email, name: user.username }],
+      subject: "Password Reset code",
+      htmlContent: req.t("passwordResetCodeEmail", { code }),
+      sender: {
+        name: "Kody Support",
+        email: KODY_NOREPLY_EMAIL,
+      },
+    });
+
+    return res.status(STATUS_CODE.SUCCESS).json({
+      userId: user.id,
+      email: user.email,
+      isVerified: user.isVerified,
+      localisation: user.localisation,
+    });
+  } catch (error) {
+    res.status(STATUS_CODE.SERVER_ERROR).json({
+      message: "Failed to send password reset code",
+      error: error.message,
+    });
+  }
+};
+
+const validCodeForPasswordReset = async (req: Request, res: Response) => {
+  try {
+    const { code }: { code: string; userId: string } = req.body;
+    const userId = req.params.userId;
+
+    // Vérifier si l'utilisateur existe
+    const user = await userService.getOne(userId);
+    if (!user) {
+      return res
+        .status(STATUS_CODE.USER_NOT_FOUND)
         .json({ message: "User not found" });
     }
 
-    // Update user expo token
-    user.expoPushToken = token;
-    const updatedUserExpoToken = await userService.updateOne(user);
+    // Vérifier le code de réinitialisation
+    const verification = await verificationService.getOne(user.id);
+    if (!verification || verification.code.toString() !== code) {
+      return res
+        .status(STATUS_CODE.NOT_FOUND)
+        .json({ message: "invalid verification code" });
+    }
 
+    // Mettre à jour le mot de passe de l'utilisateur
     return res.status(STATUS_CODE.SUCCESS).json({
-      id: updatedUserExpoToken.id,
-      username: updatedUserExpoToken.username,
-      email: updatedUserExpoToken.email,
-      isVerified: updatedUserExpoToken.isVerified,
-      expoPushToken: updatedUserExpoToken.expoPushToken,
-      localisation: updatedUserExpoToken.localisation,
+      userId: user.id,
+      email: user.email,
+      isVerified: user.isVerified,
+      localisation: user.localisation,
     });
   } catch (error) {
-    return res
+    res
       .status(STATUS_CODE.SERVER_ERROR)
-      .json({ message: "failed", error: error.message });
+      .json({ message: "Code verification failed", error: error.message });
   }
+};
+
+const resetPassword = async (req: Request, res: Response) => {
+  const { password } = req.body;
+  const userId = req.params.userId;
+  try {
+    const user = await userService.getOne(userId);
+    if (!user) {
+      return res
+        .status(STATUS_CODE.USER_NOT_FOUND)
+        .json({ message: "User not found" });
+    }
+
+    user.password = bcrypt.hashSync(password, 10);
+    await userService.updateOne(user);
+
+    return res.status(STATUS_CODE.SUCCESS).json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      isVerified: user.isVerified,
+      localisation: user.localisation,
+      expoPushToken: user.expoPushToken,
+    });
+  } catch (error) {
+    res
+      .status(STATUS_CODE.SERVER_ERROR)
+      .json({ message: "Failed to reset password", error: error.message });
+  }
+};
+
+/**
+ * Google OAuth2.0 authentication
+ */
+const googleAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
+
+/**
+ * Google OAuth2.0 authentication callback
+ */
+const googleAuthCallback = passport.authenticate("google", {
+  failureRedirect: "/login",
+  successRedirect: "/",
+});
+
+/**
+ * Logout
+ * @param req - Request
+ * @param res - Response
+ */
+const logout = (req: Request, res: Response) => {
+  //   req.logout();
+  //   res.redirect("/");
 };
 
 export default {
@@ -247,5 +363,10 @@ export default {
   removeOne,
   updateOne,
   findAllWithReport,
-  expoPushToken,
+  requestResetPassword,
+  validCodeForPasswordReset,
+  resetPassword,
+  googleAuth,
+  googleAuthCallback,
+  logout,
 };

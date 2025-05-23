@@ -5,6 +5,7 @@ export type CreateUserInput = {
   localisation: string;
   isVerified: boolean;
   expoPushToken: string;
+  googleId?: string;
 };
 
 export type User = {
@@ -14,6 +15,7 @@ export type User = {
   password: string;
   localisation: string;
   expoPushToken: string;
+  googleId: string;
   isVerified: boolean;
   updated_at: Date;
   created_at: Date;

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { STATUS_CODE } from "../utils/error_code";
-import { Report } from "../dtos/report.dto";
+import { ReportInput } from "../types/report.type";
 import reportService from "../services/report.service";
 import userService from "../services/user.service";
 
@@ -11,16 +11,7 @@ import userService from "../services/user.service";
  * @returns Created report object or error message
  */
 const create = async (req: Request, res: Response) => {
-  const {
-    description,
-    localisation,
-    category,
-    photos,
-    roadType,
-    userId,
-    latitude,
-    longitude,
-  }: Report = req.body;
+  const { userId, data }: ReportInput = req.body;
   try {
     const user = await userService.getOne(userId);
     if (!user) {
@@ -29,13 +20,7 @@ const create = async (req: Request, res: Response) => {
         .json({ message: "User Not found" });
     }
     const report = await reportService.create({
-      localisation,
-      description,
-      category,
-      photos,
-      roadType,
-      latitude,
-      longitude,
+      data,
       userId: user.id,
     });
     return res.json({ report });
@@ -96,24 +81,10 @@ const deleteOne = async (req: Request, res: Response) => {
  * @returns Updated report object or error message
  */
 const updateOne = async (req: Request, res: Response) => {
-  const {
-    description,
-    localisation,
-    category,
-    photos,
-    roadType,
-    latitude,
-    longitude,
-  }: Report = req.body;
+  const { data }: ReportInput = req.body;
   try {
     const report = await reportService.updateReport(req.params.id, {
-      description,
-      localisation,
-      category,
-      photos,
-      roadType,
-      latitude,
-      longitude,
+      data,
       userId: req.params.userId,
     });
     return res.json(report);

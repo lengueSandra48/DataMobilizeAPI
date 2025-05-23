@@ -9,8 +9,9 @@ export const users = pgTable("users", {
     .notNull()
     .unique(),
   username: varchar("username", { length: 30 }),
+  googleId: varchar("google_id"),
   email: varchar("email").unique().notNull(),
-  password: varchar("password").notNull(),
+  password: varchar("password"),
   localisation: varchar("localisation", { length: 30 }),
   expoPushToken: varchar("expoPushToken"),
   isVerified: boolean("isVerified").default(false),

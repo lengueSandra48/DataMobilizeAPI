@@ -3,23 +3,10 @@ POST http://localhost:3010/reports
 Content-Type: application/json
 
 {
-    "description": "Report description..",
-    "localisation": "NGOA",
-    "category": "Audit11",
-    "latitude": 1.2345,
-    "longitude": 1.2345,
-    "photos": [
-        {
-            "url": "http://example.com/photo1.jpg",
-            "type": "image"
-        },
-        {
-            "url": "http://example.com/photo2.jpg",
-            "type": "image"
-        }
-    ],
+    "data": {
     "roadType": "Bridge",
-    "userId": "01942190-0362-714e-bc6a-d9b114f22022"
+    },
+    "userId": "019652b5-4e6f-74dc-8344-d43a581c2111"
 }
 
 ### Get all reports

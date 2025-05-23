@@ -1,14 +1,14 @@
 import { roads } from "../db/schema/roadType.schema";
 import { eq } from "drizzle-orm";
-import { Road } from "../dtos/roadType.type";
 import { db } from "../utils/db";
+import { RoadInput } from "../types/roadType.type";
 
 /**
  * Creates a new road
  * @param road - Road data to create
  * @returns Created road object or null if creation failed
  */
-const create = async (road: Road): Promise<Road | null> => {
+const create = async (road: RoadInput): Promise<RoadInput | null> => {
   const response = await db
     .insert(roads)
     .values(road)
@@ -21,7 +21,7 @@ const create = async (road: Road): Promise<Road | null> => {
  * Retrieves all roads
  * @returns List of all roads
  */
-const getAll = async (): Promise<Road[]> => {
+const getAll = async (): Promise<RoadInput[]> => {
   return await db.select().from(roads);
 };
 
@@ -30,7 +30,7 @@ const getAll = async (): Promise<Road[]> => {
  * @param id - Road ID
  * @returns Road object or null if not found
  */
-const getOne = async (id: string): Promise<Road | null> => {
+const getOne = async (id: string): Promise<RoadInput | null> => {
   const response = await db.select().from(roads).where(eq(roads.id, id));
   return response.length > 0 ? response[0] : null;
 };
@@ -49,7 +49,10 @@ const deleteOne = async (id: string): Promise<void> => {
  * @param road - Road data to update
  * @returns Updated road object or null if not found
  */
-const updateOne = async (id: string, road: Road): Promise<Road | null> => {
+const updateOne = async (
+  id: string,
+  road: RoadInput
+): Promise<RoadInput | null> => {
   const response = await db
     .update(roads)
     .set(road)

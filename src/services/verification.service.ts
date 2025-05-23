@@ -1,12 +1,12 @@
 import { eq, sql } from "drizzle-orm";
 import { users } from "../db/schema/user.schema";
 import { db } from "../utils/db";
-import { CreateUserInput } from "../dtos/user.dto";
+import { CreateUserInput } from "../types/user.dto";
 import { verifications } from "../db/schema/verification.schema";
 import {
   CreateVerificationInput,
-  Verification,
-} from "../dtos/verification.dto";
+  VerificationInput,
+} from "../types/verification.dto";
 
 /**
  * Gets the first verification code that corresponds to the user's id provided
@@ -28,7 +28,7 @@ const getOne = async (userId: string) => {
  */
 const create = async (
   verificationInput: CreateVerificationInput
-): Promise<Verification> => {
+): Promise<VerificationInput> => {
   // we previously delete any data code from the user
   await db
     .delete(verifications)
