@@ -1,5 +1,5 @@
 {
-  "id": "36aad20a-1b05-43dd-8a19-471c8b61f3fc",
+  "id": "48bad1b6-2cd2-49db-bc49-aa4a20622551",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -114,45 +114,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "localisation": {
-          "name": "localisation",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "road_type": {
-          "name": "road_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "photos": {
-          "name": "photos",
+        "data": {
+          "name": "data",
           "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "latitude": {
-          "name": "latitude",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "longitude": {
-          "name": "longitude",
-          "type": "numeric",
           "primaryKey": false,
           "notNull": true
         },

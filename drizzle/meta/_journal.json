@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1741549890051,
-      "tag": "0000_motionless_loa",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1745141615693,
-      "tag": "0001_fluffy_vengeance",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1745144310854,
-      "tag": "0002_lonely_vulcan",
+      "when": 1747996693312,
+      "tag": "0000_real_mongu",
       "breakpoints": true
     }
   ]

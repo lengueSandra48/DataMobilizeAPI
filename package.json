@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "setup": "cp .env.example .env && yarn install && npx drizzle-kit generate && npx drizzle-kit migrate && npx drizzle-kit push && yarn serve",
+    "setup": "cp .env.exemple .env && yarn install && npx drizzle-kit generate && npx drizzle-kit migrate && npx drizzle-kit push && yarn serve",
     "serve": "nodemon index.ts",
     "test": "jest --watchAll --verbose --coverage",
     "drizzle:migrate": "npx drizzle-kit migrate"

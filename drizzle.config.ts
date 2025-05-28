@@ -8,6 +8,7 @@ import {
   POSTGRES_PORT,
   POSTGRES_USER,
 } from "./src/startup/config";
+
 export default defineConfig({
   out: "./drizzle",
   schema: "./src/db/schema",
